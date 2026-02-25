@@ -2,10 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.awsGuestService.dao.MessageDAO">
 	<select id="getMessageList" resultType="com.spring.awsGuestService.vo.MessageVO">
-		SELECT * FROM message ORDER BY idx DESC;
+		SELECT * FROM message ORDER BY idx DESC LIMIT ${min}, ${max};
 	</select>
 	<select id="getMessage" resultType="com.spring.awsGuestService.vo.MessageVO">
 		SELECT * FROM message WHERE idx = #{idx};
+	</select>
+	<select id="getTotCnt" resultType="int">
+		SELECT count(idx) FROM message;
 	</select>
 	
 	<insert id="setMessage">

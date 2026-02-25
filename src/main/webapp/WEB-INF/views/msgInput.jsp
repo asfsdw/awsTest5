@@ -127,12 +127,12 @@
 				<tr>
 					<th>이름</th>
 					<td>
-						<input type="text" name="id" id="id" required class="form-control border-danger" />
+						<input type="text" name="id" id="id" value="${id}" required class="form-control border-danger" />
 						<div id="idInvalid" class="mt-1">아이디를 입력해주세요.</div>
 					</td>
 					<th>비밀번호</th>
 					<td>
-						<input type="password" name="pw" id="pw" required class="form-control border-danger" />
+						<input type="password" name="pw" id="pw" value="${pw}" required class="form-control border-danger" />
 						<div id="pwInvalid" class="mt-1">비밀번호를 입력해주세요.</div>
 					</td>
 				</tr>
@@ -147,7 +147,7 @@
 			<div class="text-center">
 				<div class="row">
 					<div class="col"><input type="button" value="등록" onclick="fCheck()" class="btn btn-success" /></div>
-					<div class="col"><a type="button" href="${ctp}/" class="btn btn-warning">돌아가기</a></div>
+					<div class="col"><a type="button" href="${ctp}/?page=${page}" class="btn btn-warning">돌아가기</a></div>
 				</div>
 			</div>
 		</form>

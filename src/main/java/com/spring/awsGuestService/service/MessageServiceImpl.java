@@ -19,8 +19,8 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public List<MessageVO> getMessageList() {
-		return messageDAO.getMessageList();
+	public List<MessageVO> getMessageList(int min, int max) {
+		return messageDAO.getMessageList(min, max);
 	}
 
 	@Override
@@ -36,6 +36,11 @@ public class MessageServiceImpl implements MessageService {
 	@Override
 	public int setMsgDelete(int idx) {
 		return messageDAO.setMsgDelete(idx);
+	}
+
+	@Override
+	public int getTotCnt() {
+		return messageDAO.getTotCnt();
 	}
 
 }

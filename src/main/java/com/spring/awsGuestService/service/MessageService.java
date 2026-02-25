@@ -8,12 +8,14 @@ public interface MessageService {
 
 	int setMessage(MessageVO vo);
 
-	List<MessageVO> getMessageList();
+	List<MessageVO> getMessageList(int min, int max);
 
 	int setMsgUpdate(MessageVO vo);
 
 	MessageVO getMessage(int idx);
 
 	int setMsgDelete(int idx);
+
+	int getTotCnt();
 
 }

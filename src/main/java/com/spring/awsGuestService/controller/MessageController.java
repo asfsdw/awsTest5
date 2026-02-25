@@ -2,7 +2,10 @@ package com.spring.awsGuestService.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,12 +24,30 @@ public class MessageController {
 	MessageService messageService;
 	
 	@GetMapping("/msgInput")
-	public String msgInputGet() {
+	public String msgInputGet(Model model, HttpServletRequest request, int page) {
+		Cookie[] cookies = request.getCookies();
+		if(cookies != null) {
+			int cnt = 0;
+			for(int i=0; i<cookies.length; i++) {
+				if(cnt == 2) break;
+				else if(cookies[i].getName().equals("cID")) {
+					request.setAttribute("id", cookies[i].getValue());
+					cnt++;
+				}
+				else if(cookies[i].getName().equals("cPW")) {
+					request.setAttribute("pw", cookies[i].getValue());
+					cnt++;
+				}
+			}
+		}
+		
+		model.addAttribute("page", page);
 		return "msgInput";
 	}
 	
 	@PostMapping("/msgInputCheck")
-	public String msgInputCheckPost(RedirectAttributes rttr, MessageVO vo) {
+	public String msgInputCheckPost(RedirectAttributes rttr, HttpServletResponse response,
+			MessageVO vo) {
 		String id = vo.getId().trim();
 		id = id.replace("<", "&lt");
 		id = id.replace(">", "&gt");
@@ -41,6 +62,13 @@ public class MessageController {
 		int res = 0;
 		try {
 			res = messageService.setMessage(vo);
+			
+			Cookie cookieID = new Cookie("cID", vo.getId());
+			Cookie cookiePW = new Cookie("cPW", vo.getPw());
+			cookieID.setPath("/");
+			cookiePW.setPath("/");
+			response.addCookie(cookieID);
+			response.addCookie(cookiePW);
 		} catch (Exception e) {
 			System.out.println("방명록 등록 실패.");
 		}
@@ -89,6 +117,7 @@ public class MessageController {
 	@ResponseBody
 	@PostMapping("/msgDelete")
 	public int msgDeletePost(int idx) {
+		System.out.println(idx);
 		return messageService.setMsgDelete(idx);
 	}
 }

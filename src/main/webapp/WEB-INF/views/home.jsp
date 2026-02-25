@@ -130,31 +130,45 @@
 				}
 				
 				let idx = $(this).data("idx");
-				let pw = $(this).data("pw");
-				
 				let inputPW = prompt("비밀번호를 입력해주세요.");
-				if(inputPW != pw) {
-					alert("비밀번호가 틀렸습니다.");
-					return false;
-				}
-				
-				if(confirm("방명록을 삭제하시겠습니까?")) {
-					$.ajax({
-						url : "${ctp}/msgDelete",
-						type: "post",
-						data: {"idx" : idx},
-						success : (res) => {
-							if(res == 1){
-								alert("방명록이 삭제되었습니다.");
-								location.reload();
-							}
-							else {
-								alert("방명록 삭제에 실패했습니다.")
-								return false;
-							}
+				$.ajax({
+					url : "${ctp}/msgPWValidate",
+					type: "post",
+					data : {
+						"idx" : idx,
+						"pw" : inputPW
+					},
+					success : (res) => {
+						if(res == 0) {
+							alert("비밀번호가 일치하지 않습니다.");
+							updateOK = false;
+							return false;
 						}
-					});
-				}
+						else if(res == 2) {
+							alert("잘못된 접근입니다.");
+							updateOK = false;
+							return false;
+						}
+						
+						if(confirm("방명록을 삭제하시겠습니까?")) {
+							$.ajax({
+								url : "${ctp}/msgDelete",
+								type: "post",
+								data: {"idx" : idx},
+								success : (res) => {
+									if(res == 1){
+										alert("방명록이 삭제되었습니다.");
+										location.reload();
+									}
+									else {
+										alert("방명록 삭제에 실패했습니다.")
+										return false;
+									}
+								}
+							});
+						}
+					}
+				});
 			});
 		});
 		
@@ -172,7 +186,7 @@
 		<h2><b>간단 방명록</b></h2>
 		<hr/>
 		<p class="text-end">
-			<a href="${ctp}/msgInput" class="btn btn-success">글쓰기</a>
+			<a href="${ctp}/msgInput/?page=${page}" class="btn btn-success">글쓰기</a>
 		</p>
 		<hr/>
 		<c:if test="${empty vos}">
@@ -200,7 +214,7 @@
 				</div>
 				<div class="row mt-2">
 					<div class="col"></div>
-					<div class="col text-center ms-4">${fn:length(vos)-st.index}</div>
+					<div class="col text-center ms-4">${msgStartNum-st.index}</div>
 					<div class="col text-end me-4 mb-4 btnSet">
 						<input type="button" value="수정" class="updateBtn btn btn-success btn-sm"
 							data-idx="${vo.idx}" data-message="${vo.message}" />
@@ -213,6 +227,17 @@
 				</div>
 			</c:forEach>
 		</c:if>
+		<hr/>
+		<ul class="pagination justify-content-center">
+			<c:if test="${page > 1}"><li class="page-item"><a href="${ctp}/?page=1" class="page-link text-dark">《</a></li></c:if>
+			<c:if test="${curBlock > 1}"><li class="page-item"><a href="${ctp}/?page=${startPage - 1}" class="page-link text-dark">＜</a></li></c:if>
+			<c:forEach var="i" begin="${startPage}" end="${endPage}">
+				<c:if test="${i == page}"><li class="page-item active page-link bg-secondary border-secondary">${i}</li></c:if>
+				<c:if test="${i != page}"><li class="page-item"><a href="${ctp}/?page=${i}" class="page-link text-dark">${i}</a></li></c:if>
+			</c:forEach>
+			<c:if test="${curBlock < maxBlock}"><li class="page-item"><a href="${ctp}?page=${endPage + 1}" class="page-link text-dark">＞</a></li></c:if>
+			<c:if test="${page < maxPage}"><li class="page-item"><a href="${ctp}/?page=${maxPage}" class="page-link text-dark">》</a></li></c:if>
+		</ul>
 		<p><br/></p>
 	</div>
 </body>
