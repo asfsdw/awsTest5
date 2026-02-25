@@ -30,7 +30,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            rm -rf /home/ubuntu/apache-tomcat-9.0.107/webapps/awsGuestService*
+            rm -rf /home/ubuntu/deploy/awsGuestService.war
             
       - name: Copy WAR to EC2
         uses: appleboy/scp-action@v0.1.4
@@ -40,7 +40,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           source: "target/awsGuestService.war"
-          target: "/home/ubuntu/apache-tomcat-9.0.107/webapps/"
+          target: "/home/ubuntu/deploy/"
+          strip_components: 1
 
       - name: Restart Tomcat
         uses: appleboy/ssh-action@v0.1.6
@@ -52,4 +53,6 @@ jobs:
           script: |
             /home/ubuntu/apache-tomcat-9.0.107/bin/shutdown.sh
             sleep 5
+            rm -rf /home/ubuntu/apache-tomcat-9.0.107/webapps/awsGuestService*
+            mv /home/ubuntu/deploy/awsGuestService.war /home/ubuntu/apache-tomcat-9.0.107/webapps/
             /home/ubuntu/apache-tomcat-9.0.107/bin/startup.sh
