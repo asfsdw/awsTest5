@@ -24,7 +24,7 @@
 			if('${pw}') {
 				document.getElementById("pw").className = "form-control border-success";
 				$("#pwInvalid").text("");
-				idOK = true;
+				pwOK = true;
 			}
 			
 			$("#id").on("input", () => {
