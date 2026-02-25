@@ -185,6 +185,7 @@
 		
 	</dependencies>
     <build>
+    	<finalName>awsGuestService</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-eclipse-plugin</artifactId>
