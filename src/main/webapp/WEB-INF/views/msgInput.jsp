@@ -16,6 +16,17 @@
 		let msgOK = false;
 		
 		$(() => {
+			if('${id}') {
+				document.getElementById("id").className = "form-control border-success";
+				$("#idInvalid").text("");
+				idOK = true;
+			}
+			if('${pw}') {
+				document.getElementById("pw").className = "form-control border-success";
+				$("#pwInvalid").text("");
+				idOK = true;
+			}
+			
 			$("#id").on("input", () => {
 				let id = $("#id").val();
 				
