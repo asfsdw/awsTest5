@@ -57,21 +57,31 @@ public class MessageController {
 	}
 	
 	@ResponseBody
+	@PostMapping("/msgPWValidate")
+	public int msgPWValidatePost(int idx, String pw) {
+		try {
+			MessageVO vo = messageService.getMessage(idx);
+			if(!vo.getPw().equals(pw)) return 0;
+			else return 1;
+		} catch (Exception e) {
+			return 2;
+		}
+	}
+	
+	@ResponseBody
 	@PostMapping("/msgUpdate")
 	public int msgUpdatePost(MessageVO updateVO) {
-		MessageVO originVO = messageService.getMessage(updateVO.getIdx());
-		if(!originVO.getId().equals(updateVO.getId())) return 0;
-		
-		int res = 2;
+		int res = 0;
 		
 		try {
+			MessageVO originVO = messageService.getMessage(updateVO.getIdx());
+			updateVO.setId(originVO.getId());
 			updateVO.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 			updateVO.setUpdateYN("Y");
-			System.out.println(updateVO);
+			
 			res = messageService.setMsgUpdate(updateVO);
 		} catch (Exception e) {
 			System.out.println("방명록 수정 실패.");
-			System.out.println(e.getMessage());
 		}
 		return res;
 	}

@@ -25,25 +25,39 @@
 					updateOK = true;
 					
 					let idx = $(this).data("idx");
-					let pw = $(this).data("pw");
 					let msg = $(this).data("message");
 					
 					let inputPW = prompt("비밀번호를 입력해주세요.");
-					if(inputPW != pw) {
-						alert("비밀번호가 틀렸습니다.");
-						updateOK = false;
-						return false;
-					}
-					
-					let txt = '<textarea rows="6" name="message" id="msg" required class="form-control border-success">'+msg+'</textarea>';
-					txt += '<div id="msgInvalid" class="mt-1"></div>';
-					$("#"+idx+"msg").html(txt);
-					
-					let btn = $(this).closest(".btnSet");
-					btn.find(".updateBtn").hide();
-					btn.find(".confirmBtn").show();
-					btn.find(".deleteBtn").hide();
-					btn.find(".cancelBtn").show();
+					$.ajax({
+						url : "${ctp}/msgPWValidate",
+						type: "post",
+						data : {
+							"idx" : idx,
+							"pw" : inputPW
+						},
+						success : (res) => {
+							if(res == 0) {
+								alert("비밀번호가 일치하지 않습니다.");
+								updateOK = false;
+								return false;
+							}
+							else if(res == 2) {
+								alert("잘못된 접근입니다.");
+								updateOK = false;
+								return false;
+							}
+							
+							let txt = '<textarea rows="6" name="message" id="msg" required class="form-control border-success">'+msg+'</textarea>';
+							txt += '<div id="msgInvalid" class="mt-1"></div>';
+							$("#"+idx+"msg").html(txt);
+							
+							let btn = $(this).closest(".btnSet");
+							btn.find(".updateBtn").hide();
+							btn.find(".confirmBtn").show();
+							btn.find(".deleteBtn").hide();
+							btn.find(".cancelBtn").show();
+						}
+					});
 				}
 				else {
 					alert("현재 방명록을 수정 중입니다.\n수정은 한 번에 한 개만 가능합니다.");
@@ -81,7 +95,6 @@
 			$(document).on("click", ".confirmBtn", function() {
 				if(msgOK) {
 					let idx = $(this).data("idx");
-					let id = $(this).data("id");
 					let msg = $("#msg").val();
 					
 					$.ajax({
@@ -89,22 +102,17 @@
 						type: "post",
 						data: {
 							"idx" : idx,
-							"id" : id,
 							"message" : msg
 						},
 						success : (res) => {
 							if(res == 0) {
-								alert("이름은 수정하실 수 없습니다.");
+								alert("방명록 수정에 실패했습니다.")
 								return false;
 							}
 							else if(res == 1){
 								alert("방명록이 수정되었습니다.");
 								updateOK = false;
 								location.reload();
-							}
-							else {
-								alert("방명록 수정에 실패했습니다.")
-								return false;
 							}
 						}
 					});
@@ -186,7 +194,7 @@
 							<div id="${vo.idx}msg">${fn:replace(fn:replace(vo.message,CRLF,'<br/>'),LF,'<br/>')}</div>
 						</div>
 						<div class="row mt-2" style="padding-left:200px">
-							<div>작성자 : ${vo.id}</div>
+							<div>작성자 : <span id="${vo.idx}id">${vo.id}</span></div>
 						</div>
 					</div>
 				</div>
@@ -195,11 +203,11 @@
 					<div class="col text-center ms-4">${fn:length(vos)-st.index}</div>
 					<div class="col text-end me-4 mb-4 btnSet">
 						<input type="button" value="수정" class="updateBtn btn btn-success btn-sm"
-							data-idx="${vo.idx}" data-pw="${vo.pw}" data-message="${vo.message}" />
+							data-idx="${vo.idx}" data-message="${vo.message}" />
 						<input type="button" value="확인" style="display:none" class="confirmBtn btn btn-outline-success btn-sm"
-							data-idx="${vo.idx}" data-id="${vo.id}" data-message="${vo.message}" />
+							data-idx="${vo.idx}" data-message="${vo.message}" />
 						<input type="button" value="삭제" class="deleteBtn btn btn-danger btn-sm"
-							data-idx="${vo.idx}" data-pw="${vo.pw}" />
+							data-idx="${vo.idx}"" />
 						<input type="button" value="취소" onclick="msgCancel()" style="display:none" class="cancelBtn btn btn-warning btn-sm" />
 					</div>
 				</div>
